@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ya Marco Chili Garlic</title>
+<meta name="theme-color" content="#170503">
+<link rel="icon" href="yamarco-logo.svg" type="image/svg+xml">
+<meta property="og:title" content="Ya Marco! Chili Garlic">
+<meta property="og:description" content="Chili garlic that bites back. Fried golden, cooked low and slow, sealed by hand in small batches.">
+<meta property="og:image" content="assets/jars.jpg">
+<meta name="description" content="Ya Marco! Homemade chili garlic, fried golden and cooked low and slow in small batches.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: a fixed WebGL fire stage behind; comic-book panels scroll over it, alternating sides so the 3D jar always has room. */
+:root {
+  color-scheme: dark;
+  --ink: #170503;        /* charred pan */
+  --ember: #2B0A05;      /* outline ink */
+  --chili: #E8261C;      /* sili red */
+  --flame: #FF7A00;      /* hot oil orange */
+  --yolk: #FFC93C;       /* fried-garlic gold */
+  --garlic: #FFF1D6;     /* clove cream */
+  --muted: #EBCBB0;
+  --panel: rgba(23, 5, 3, 0.82);
+  --display: "Bangers", Impact, "Arial Black", sans-serif;
+  --body: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --step-0: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --step-1: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem);
+  --step-2: clamp(1.8rem, 1.4rem + 1.8vw, 2.9rem);
+  --step-3: clamp(2.6rem, 1.8rem + 3.6vw, 5rem);
+  --step-4: clamp(3.4rem, 2rem + 6vw, 7.5rem);
+}
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--garlic);
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+#scene { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; z-index: 0; }
+.no-webgl #scene { display: none; }
+.no-webgl body, body.no-webgl {
+  background: radial-gradient(120% 60% at 50% 110%, #ff7a00 0%, #b81d0c 30%, var(--ink) 70%) fixed, var(--ink);
+}
+/* comic halftone over everything */
+.halftone {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: radial-gradient(rgba(0,0,0,.35) 1px, transparent 1.4px);
+  background-size: 6px 6px; mix-blend-mode: multiply; opacity: .45;
+}
+
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--ink); }
+.nav {
+  position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding-block: .7rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: linear-gradient(180deg, rgba(23,5,3,.85), rgba(23,5,3,0));
+}
+.wordmark {
+  font-family: var(--display); font-size: 2rem; letter-spacing: .04em; color: var(--yolk);
+  text-decoration: none; text-shadow: 2px 2px 0 var(--chili), 4px 4px 0 var(--ember);
+  transform: rotate(-3deg); display: inline-block;
+}
+.nav ul { display: flex; gap: 1.4rem; list-style: none; margin: 0; padding: 0; align-items: center; }
+.nav a.link { color: var(--garlic); text-decoration: none; font-weight: 600; font-size: .95rem; }
+.nav a.link:hover, .nav a.link:focus-visible { color: var(--yolk); }
+@media (max-width: 760px) { .nav li.opt { display: none; } }
+
+main { position: relative; z-index: 2; }
+.band {
+  min-height: 100svh; display: flex; align-items: center;
+  padding-block: 7rem 5rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.inner { width: 100%; max-width: 1240px; margin: 0 auto; display: flex; }
+.side-left .inner { justify-content: flex-start; }
+.side-right .inner { justify-content: flex-end; }
+.col { width: min(100%, 600px); min-width: 0; display: flex; flex-direction: column; gap: 1.4rem; }
+
+.kicker {
+  align-self: flex-start; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; font-size: .8rem;
+  background: var(--chili); color: var(--garlic); padding: .35rem .8rem; border: 3px solid var(--ember);
+  box-shadow: 4px 4px 0 var(--ember); transform: rotate(-2deg);
+}
+h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 400; letter-spacing: .03em; line-height: .95; text-wrap: balance; }
+.hot {
+  color: var(--yolk);
+  text-shadow: 3px 3px 0 var(--chili), 6px 6px 0 var(--ember), 0 0 40px rgba(255,122,0,.55);
+}
+h1.hot { font-size: var(--step-4); }
+h2.hot { font-size: var(--step-3); }
+h3 { font-size: var(--step-2); color: var(--garlic); text-shadow: 3px 3px 0 var(--ember); }
+p { margin: 0; max-width: 60ch; }
+.lead { font-size: var(--step-1); line-height: 1.45; color: var(--garlic); }
+.muted { color: var(--muted); }
+
+.panel {
+  background: var(--panel); border: 4px solid var(--ember); border-radius: 6px;
+  box-shadow: 8px 8px 0 var(--ember), 0 0 0 2px rgba(255,122,0,.25) inset;
+  padding: clamp(1.1rem, 2.5vw, 2rem);
+  backdrop-filter: blur(3px);
+}
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 1rem; }
+.btn {
+  font-family: var(--display); font-size: 1.6rem; letter-spacing: .05em; text-decoration: none; cursor: pointer;
+  color: var(--ember); background: var(--yolk); border: 4px solid var(--ember); border-radius: 999px;
+  padding: .45rem 1.5rem .3rem; box-shadow: 5px 5px 0 var(--ember);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover { transform: translate(-2px,-2px) rotate(-1deg); box-shadow: 7px 7px 0 var(--ember); }
+.btn:active { transform: translate(3px,3px); box-shadow: 2px 2px 0 var(--ember); }
+.btn.red { background: var(--chili); color: var(--garlic); }
+.btn:focus-visible, input:focus-visible, button:focus-visible, textarea:focus-visible, a:focus-visible {
+  outline: 3px solid var(--yolk); outline-offset: 3px;
+}
+
+/* hero */
+.hero .col { gap: 1.2rem; }
+.logo { width: min(100%, 470px); height: auto; filter: drop-shadow(0 10px 30px rgba(255,90,0,.45)); }
+.logo-wrap { position: relative; align-self: flex-start; }
+.burst {
+  position: absolute; right: -6%; top: 2%; width: 120px; height: 120px; display: grid; place-items: center;
+  font-family: var(--display); font-size: 1.25rem; line-height: .95; text-align: center; color: var(--ember);
+  transform: rotate(var(--spin, 12deg));
+}
+.burst svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.burst span { position: relative; }
+.scroll-hint {
+  position: absolute; left: 50%; bottom: 1.6rem; transform: translateX(-50%);
+  font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: .78rem; color: var(--yolk);
+  display: flex; flex-direction: column; align-items: center; gap: .3rem; text-align: center;
+}
+.scroll-hint i { display: block; width: 3px; height: 34px; background: linear-gradient(var(--yolk), transparent); animation: drip 1.6s ease-in-out infinite; }
+@keyframes drip { 0%{transform:scaleY(.2);transform-origin:top} 50%{transform:scaleY(1)} 100%{transform:scaleY(.2);transform-origin:bottom} }
+.hero { position: relative; }
+
+/* crew */
+.crew-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem; }
+.crew-card { display: flex; flex-direction: column; gap: .6rem; align-items: flex-start; }
+.crew-card:nth-child(1) { transform: rotate(-1.5deg); }
+.crew-card:nth-child(2) { transform: rotate(1.5deg); }
+.crew-card svg { width: 120px; height: 140px; align-self: center; }
+.crew-card .name { font-family: var(--display); font-size: 2.4rem; line-height: 1; color: var(--yolk); text-shadow: 3px 3px 0 var(--ember); }
+.crew-card .role { font-weight: 800; text-transform: uppercase; letter-spacing: .1em; font-size: .75rem; color: var(--flame); }
+@media (max-width: 560px) { .crew-grid { grid-template-columns: 1fr; } }
+
+/* steps */
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.6rem; counter-reset: step; }
+.step { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 1.2rem; align-items: center; }
+.step figure { margin: 0; position: relative; border: 4px solid var(--ember); border-radius: 6px; overflow: hidden; box-shadow: 6px 6px 0 var(--ember); aspect-ratio: 16/10; max-width: 100%; background: var(--ember); }
+.step:nth-child(2) figure { transform: rotate(1.2deg); }
+.step:nth-child(1) figure, .step:nth-child(3) figure { transform: rotate(-1.2deg); }
+.step video, .step img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.step .num {
+  font-family: var(--display); font-size: 3.2rem; line-height: 1; color: var(--chili);
+  -webkit-text-stroke: 2px var(--ember); text-shadow: 3px 3px 0 var(--ember);
+}
+.step .txt { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+.step h3 { font-size: 2rem; }
+@media (max-width: 640px) { .step { grid-template-columns: 1fr; } }
+
+/* heat */
+.heat .inner { justify-content: center; }
+.heat .col { width: min(100%, 1100px); align-items: center; text-align: center; gap: 1.2rem; }
+.heat .spacer { height: clamp(14rem, 34vh, 22rem); }
+.meter { width: min(100%, 760px); display: flex; flex-direction: column; gap: .8rem; align-items: stretch; }
+.meter .bar { height: 34px; border: 4px solid var(--ember); border-radius: 999px; background: rgba(0,0,0,.55); overflow: hidden; box-shadow: 5px 5px 0 var(--ember); }
+.meter .fill {
+  height: 100%; width: calc(var(--heat, .82) * 100%);
+  background: linear-gradient(90deg, var(--yolk), var(--flame) 45%, var(--chili));
+  box-shadow: 0 0 24px rgba(255,122,0,.8);
+}
+.meter .scale { display: flex; justify-content: space-between; font-weight: 800; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.meter .scale b { color: var(--yolk); }
+.peppers { display: flex; gap: .6rem; justify-content: center; }
+.peppers svg { width: 46px; height: 46px; opacity: .25; transition: opacity .2s, transform .2s; }
+.peppers svg.on { opacity: 1; transform: rotate(-10deg) scale(1.1); }
+.pairs { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; list-style: none; padding: 0; margin: 0; }
+.pairs li { background: var(--garlic); color: var(--ember); font-weight: 800; padding: .35rem .9rem; border: 3px solid var(--ember); border-radius: 999px; box-shadow: 3px 3px 0 var(--ember); }
+.pairs li:nth-child(odd) { transform: rotate(-2deg); }
+.pairs li:nth-child(even) { transform: rotate(2deg); background: var(--yolk); }
+
+/* gallery */
+.shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem; align-items: start; }
+.shot { margin: 0; display: flex; flex-direction: column; gap: .8rem; }
+.shot .frame { border: 4px solid var(--ember); border-radius: 6px; overflow: hidden; box-shadow: 7px 7px 0 var(--ember); background: var(--ember); }
+.shot img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; }
+.shot:nth-child(1) .frame { transform: rotate(-2deg); }
+.shot:nth-child(2) { margin-top: 3rem; }
+.shot:nth-child(2) .frame { transform: rotate(2deg); }
+.bubble {
+  position: relative; align-self: flex-start; background: var(--garlic); color: var(--ember); font-weight: 800;
+  padding: .55rem .9rem; border: 3px solid var(--ember); border-radius: 18px; box-shadow: 3px 3px 0 var(--ember); font-size: .95rem;
+}
+.bubble::before {
+  content: ""; position: absolute; top: -14px; left: 24px; border: 8px solid transparent; border-bottom: 10px solid var(--ember);
+}
+@media (max-width: 520px) { .shots { grid-template-columns: 1fr; } .shot:nth-child(2) { margin-top: 0; } }
+
+/* order */
+.order-form { display: grid; gap: 1rem; }
+.field { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+.field label, .field legend { font-weight: 800; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--yolk); padding: 0; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+input[type=text], textarea {
+  font: inherit; color: var(--ember); background: var(--garlic); border: 3px solid var(--ember); border-radius: 6px; padding: .55rem .7rem; width: 100%; box-sizing: border-box;
+}
+textarea { resize: vertical; min-height: 4.2rem; }
+.stepper { display: flex; align-items: stretch; border: 3px solid var(--ember); border-radius: 6px; overflow: hidden; background: var(--garlic); width: max-content; }
+.stepper button { font-family: var(--display); font-size: 1.6rem; width: 3rem; border: 0; background: var(--yolk); color: var(--ember); cursor: pointer; }
+.stepper output { min-width: 3.2rem; display: grid; place-items: center; font-weight: 800; font-size: 1.3rem; color: var(--ember); font-variant-numeric: tabular-nums; }
+fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+.lids { display: flex; gap: .6rem; flex-wrap: wrap; }
+.lids label { display: flex; align-items: center; gap: .5rem; cursor: pointer; font-weight: 600; color: var(--garlic); text-transform: none; letter-spacing: 0; font-size: 1rem;
+  border: 3px solid var(--ember); border-radius: 999px; padding: .3rem .9rem .3rem .4rem; background: rgba(0,0,0,.35); }
+.lids input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.lids .dot { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--ember); }
+.lids .dot.red { background: var(--chili); }
+.lids .dot.silver { background: linear-gradient(135deg, #f2f2f2, #9a9a9a); }
+.lids input:checked + .dot { box-shadow: 0 0 0 3px var(--yolk); }
+.lids label:has(input:focus-visible) { outline: 3px solid var(--yolk); outline-offset: 2px; }
+.preview { background: var(--garlic); color: var(--ember); border: 3px dashed var(--ember); border-radius: 6px; padding: .8rem 1rem; font-weight: 600; white-space: pre-wrap; overflow-wrap: anywhere; }
+.status { min-height: 1.5em; font-weight: 600; color: var(--yolk); }
+
+footer {
+  position: relative; z-index: 2; text-align: center; padding-block: 3rem calc(2rem + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: linear-gradient(0deg, var(--ink), rgba(23,5,3,0)); color: var(--muted); font-size: .9rem;
+}
+footer .wordmark { font-size: 2.6rem; margin-bottom: .4rem; }
+
+@media (max-width: 760px) {
+  .band { padding-block: 6rem 4rem; }
+  .col { width: 100%; }
+  .hero .col { padding-bottom: 38vh; }
+}
+img { max-width: 100%; }
+</style>
+</head>
+<body>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="halftone" aria-hidden="true"></div>
+
+<!-- shared drawing defs: gradients + the two characters -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gChili" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF4A2E"/><stop offset=".55" stop-color="#E3191B"/><stop offset="1" stop-color="#A00A12"/></linearGradient>
+    <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FF3D00"/><stop offset=".5" stop-color="#FF8A00"/><stop offset="1" stop-color="#FFD54A"/></linearGradient>
+    <linearGradient id="gWord" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE27A"/><stop offset=".45" stop-color="#FF9A1F"/><stop offset="1" stop-color="#E8261C"/></linearGradient>
+    <radialGradient id="gGarlic" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FFFDF5"/><stop offset=".7" stop-color="#FBEBCB"/><stop offset="1" stop-color="#E9CFA0"/></radialGradient>
+    <g id="garlic-guy" stroke="#2B0A05" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M213 62 C208 36 220 22 238 14" fill="none" stroke="#3E8E2F" stroke-width="9"/>
+      <path d="M210 62 C200 95 128 112 124 178 C120 238 163 268 210 268 C257 268 300 238 296 178 C292 112 220 95 210 62 Z" fill="url(#gGarlic)"/>
+      <path d="M210 72 C172 120 160 205 182 262" fill="none" stroke="#D9B98A" stroke-width="4"/>
+      <path d="M210 72 C248 120 260 205 238 262" fill="none" stroke="#D9B98A" stroke-width="4"/>
+      <path d="M196 270 l-6 14 M210 270 v16 M224 270 l6 14" fill="none" stroke-width="4"/>
+      <ellipse cx="186" cy="172" rx="17" ry="20" fill="#fff"/><ellipse cx="236" cy="172" rx="17" ry="20" fill="#fff"/>
+      <circle cx="193" cy="176" r="8" fill="#2B0A05" stroke="none"/><circle cx="243" cy="176" r="8" fill="#2B0A05" stroke="none"/>
+      <circle cx="196" cy="172" r="3" fill="#fff" stroke="none"/><circle cx="246" cy="172" r="3" fill="#fff" stroke="none"/>
+      <ellipse cx="160" cy="206" rx="13" ry="8" fill="#FF8A8A" stroke="none" opacity=".75"/><ellipse cx="262" cy="206" rx="13" ry="8" fill="#FF8A8A" stroke="none" opacity=".75"/>
+      <path d="M184 208 Q211 248 240 208 Z" fill="#7A1A0C"/>
+      <path d="M198 224 Q211 238 226 224 Q212 216 198 224 Z" fill="#FF6B6B" stroke="none"/>
+    </g>
+    <g id="chili-guy" stroke="#2B0A05" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M398 92 C372 70 392 44 384 14 C410 36 418 50 414 30 C436 52 440 72 432 88 Z" fill="url(#gFlame)"/>
+      <path d="M470 86 C468 60 492 52 490 26 C512 50 512 72 498 92 Z" fill="url(#gFlame)"/>
+      <path d="M432 74 C486 80 506 132 488 200 C472 258 424 300 362 322 C344 328 336 312 350 304 C392 276 406 232 396 178 C388 130 396 84 432 74 Z" fill="url(#gChili)"/>
+      <path d="M478 120 C486 150 482 180 474 205" fill="none" stroke="#FF9C8A" stroke-width="7" opacity=".85"/>
+      <path d="M440 66 C440 42 452 26 474 18" fill="none" stroke="#2F7D25" stroke-width="10"/>
+      <path d="M400 86 C412 60 466 58 478 84 C462 100 418 100 400 86 Z" fill="#46A535"/>
+      <path d="M410 128 L438 140 M478 128 L452 140" fill="none" stroke-width="7"/>
+      <ellipse cx="426" cy="154" rx="13" ry="15" fill="#fff"/><ellipse cx="464" cy="154" rx="13" ry="15" fill="#fff"/>
+      <circle cx="422" cy="157" r="6" fill="#2B0A05" stroke="none"/><circle cx="460" cy="157" r="6" fill="#2B0A05" stroke="none"/>
+      <path d="M424 186 Q445 172 466 186 Q460 212 445 212 Q430 212 424 186 Z" fill="#5A0E08"/>
+      <path d="M431 187 L459 187" stroke="#fff" stroke-width="5"/>
+      <path d="M500 138 C492 152 494 162 501 162 C508 162 510 152 500 138 Z" fill="#8FD3FF" stroke-width="3"/>
+    </g>
+    <g id="mini-chili">
+      <path d="M30 8 C40 10 44 20 40 30 C36 40 26 44 12 46 C8 46 8 42 11 41 C20 37 24 31 23 24 C22 16 24 9 30 8 Z" fill="url(#gChili)" stroke="#2B0A05" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M24 10 C27 4 36 4 38 10 C34 13 27 13 24 10 Z" fill="#46A535" stroke="#2B0A05" stroke-width="2.5"/>
+    </g>
+  </defs>
+</svg>
+
+<nav class="nav" aria-label="Main">
+  <a class="wordmark" href="#hero">Ya Marco!</a>
+  <ul>
+    <li class="opt"><a class="link" href="#crew">The crew</a></li>
+    <li class="opt"><a class="link" href="#made">How it's made</a></li>
+    <li class="opt"><a class="link" href="#heat">Heat level</a></li>
+    <li><a class="btn red" href="#order" style="font-size:1.25rem;padding:.3rem 1.1rem .2rem">Order</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section id="hero" class="band hero side-left" data-scene="hero">
+    <div class="inner">
+      <div class="col">
+        <div class="logo-wrap">
+          <svg class="logo" viewBox="60 0 520 480" role="img" aria-label="Ya Marco! chili garlic logo: a smiling garlic bulb with its arm around a fiery, shouting chili">
+            <use href="#garlic-guy"/>
+            <use href="#chili-guy"/>
+            <g stroke="#2B0A05" stroke-width="8" stroke-linecap="round"><path d="M292 196 C322 196 350 186 384 174" fill="none"/><circle cx="389" cy="172" r="11" fill="#FBEBCB" stroke-width="6"/></g>
+            <text x="320" y="408" text-anchor="middle" font-family="Bangers, Impact, sans-serif" font-size="112" letter-spacing="3" fill="url(#gWord)" stroke="#2B0A05" stroke-width="10" stroke-linejoin="round" paint-order="stroke" transform="rotate(-4 320 400)">YA MARCO!</text>
+            <path d="M150 428 L490 428 L478 448 L490 468 L150 468 L162 448 Z" fill="#E8261C" stroke="#2B0A05" stroke-width="5" stroke-linejoin="round"/>
+            <text x="320" y="455" text-anchor="middle" font-family="'Bricolage Grotesque', Arial, sans-serif" font-weight="800" font-size="20" letter-spacing="3" fill="#FFF1D6">CHILI GARLIC • SMALL BATCH</text>
+          </svg>
+          <div class="burst" aria-hidden="true">
+            <svg viewBox="0 0 100 100"><polygon points="50,2 59,22 80,10 76,33 98,36 81,52 96,70 73,70 74,94 56,80 44,98 38,76 16,88 22,66 2,58 22,46 8,28 30,30 28,6 44,22" fill="#FFC93C" stroke="#2B0A05" stroke-width="4" stroke-linejoin="round"/></svg>
+            <span>SMALL<br>BATCH!</span>
+          </div>
+        </div>
+        <span class="kicker">Anghang na may puso</span>
+        <h1 class="hot">Chili garlic that bites back.</h1>
+        <p class="lead">Fresh garlic fried golden, real chilies cooked low and slow, every jar sealed by hand. Spicy, garlicky, and a little bit loud.</p>
+        <div class="btn-row">
+          <a class="btn" href="#order">Get a jar</a>
+          <a class="btn red" href="#made">See the fire</a>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">Scroll if you can take the heat<i></i></div>
+  </section>
+
+  <section id="crew" class="band side-right" data-scene="crew">
+    <div class="inner">
+      <div class="col">
+        <span class="kicker">Meet the crew</span>
+        <h2 class="hot">A sweetheart and a hothead.</h2>
+        <div class="crew-grid">
+          <article class="crew-card panel">
+            <svg viewBox="110 4 200 290" aria-hidden="true"><use href="#garlic-guy"/></svg>
+            <span class="role">The garlic</span>
+            <span class="name">Bawang</span>
+            <p>The sweet one. Fried slowly until golden, crunchy and nutty, so every spoonful tastes rich instead of raw.</p>
+          </article>
+          <article class="crew-card panel">
+            <svg viewBox="330 4 200 330" aria-hidden="true"><use href="#chili-guy"/></svg>
+            <span class="role">The chili</span>
+            <span class="name">Sili</span>
+            <p>The hothead. Short fuse, big heart. Brings the kind of heat that makes you reach for another cup of rice.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="made" class="band side-left" data-scene="made">
+    <div class="inner">
+      <div class="col" style="width:min(100%,680px)">
+        <span class="kicker">How it's made</span>
+        <h2 class="hot">Three steps. One very hot kitchen.</h2>
+        <ol class="steps">
+          <li class="step">
+            <figure><video src="assets/garlic.mp4" poster="assets/garlic-poster.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Garlic frying in oil"></video></figure>
+            <div class="txt"><span class="num">1</span><h3>Fry the garlic</h3><p class="muted">Fresh garlic goes into hot oil and gets stirred until it turns golden and crisp.</p></div>
+          </li>
+          <li class="step">
+            <figure><video src="assets/chili.mp4" poster="assets/chili-poster.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Chili simmering and being stirred"></video></figure>
+            <div class="txt"><span class="num">2</span><h3>Bring the heat</h3><p class="muted">Chilies join the pan and cook low and slow, stirred by hand the whole time.</p></div>
+          </li>
+          <li class="step">
+            <figure><img src="assets/jars.jpg" alt="Rows of freshly filled chili garlic jars on a table" loading="lazy"></figure>
+            <div class="txt"><span class="num">3</span><h3>Fill &amp; seal</h3><p class="muted">Every jar is filled while fresh, capped, and sealed with a thank-you sticker.</p></div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="heat" class="band heat" data-scene="heat">
+    <div class="inner">
+      <div class="col">
+        <span class="kicker" style="align-self:center">Heat level</span>
+        <h2 class="hot">Turn it up.</h2>
+        <div class="spacer" aria-hidden="true"></div>
+        <div class="meter panel" role="img" aria-label="Heat level: hot, about 4 out of 5">
+          <div class="peppers" aria-hidden="true">
+            <svg viewBox="0 0 50 50"><use href="#mini-chili"/></svg>
+            <svg viewBox="0 0 50 50"><use href="#mini-chili"/></svg>
+            <svg viewBox="0 0 50 50"><use href="#mini-chili"/></svg>
+            <svg viewBox="0 0 50 50"><use href="#mini-chili"/></svg>
+            <svg viewBox="0 0 50 50"><use href="#mini-chili"/></svg>
+          </div>
+          <div class="bar"><div class="fill"></div></div>
+          <div class="scale" aria-hidden="true"><span>Mild</span><span>Warm</span><b>Hot</b><span>Lava</span></div>
+          <p style="margin:0 auto">Spicy enough to make you sweat. Garlicky enough to keep you coming back.</p>
+        </div>
+        <p class="lead" style="margin-top:1rem">Spoon it on</p>
+        <ul class="pairs">
+          <li>Garlic rice</li><li>Pancit</li><li>Siomai</li><li>Fried eggs</li><li>Lugaw</li><li>Dumplings</li><li>Instant noodles</li><li>Inihaw</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery" class="band side-right" data-scene="gallery">
+    <div class="inner">
+      <div class="col">
+        <span class="kicker">Fresh from the kitchen</span>
+        <h2 class="hot">Packed with love. Literally.</h2>
+        <div class="shots">
+          <figure class="shot">
+            <div class="frame"><img src="assets/hand.jpg" alt="A jar of Ya Marco chili garlic with a red lid and a thank-you seal" loading="lazy"></div>
+            <figcaption class="bubble">Every jar gets a thank-you seal.</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="frame"><img src="assets/box.jpg" alt="A box packed with red and silver lidded jars, ready to ship" loading="lazy"></div>
+            <figcaption class="bubble">Red lid or silver lid, same fire inside.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="order" class="band side-left" data-scene="order">
+    <div class="inner">
+      <div class="col">
+        <span class="kicker">Small batches sell out</span>
+        <h2 class="hot">Reserve your jar.</h2>
+        <p class="lead">Build your order below, copy it, and send it to us in a message. We'll confirm your jars from the next batch.</p>
+        <form class="order-form panel" id="order-form" novalidate>
+          <div class="row2">
+            <div class="field">
+              <label for="order-name">Your name</label>
+              <input type="text" id="order-name" autocomplete="name" placeholder="Juan dela Cruz">
+            </div>
+            <div class="field">
+              <label for="order-qty-out">How many jars</label>
+              <div class="stepper">
+                <button type="button" id="qty-minus" aria-label="One jar fewer">−</button>
+                <output id="order-qty-out" aria-live="polite">2</output>
+                <button type="button" id="qty-plus" aria-label="One jar more">+</button>
+              </div>
+            </div>
+          </div>
+          <fieldset>
+            <legend>Lid colour</legend>
+            <div class="lids">
+              <label><input type="radio" name="lid" id="lid-red" value="red" checked><span class="dot red"></span>Red</label>
+              <label><input type="radio" name="lid" id="lid-silver" value="silver"><span class="dot silver"></span>Silver</label>
+              <label><input type="radio" name="lid" id="lid-any" value="any"><span class="dot red" style="background:linear-gradient(90deg,#E8261C 50%,#c9c9c9 50%)"></span>Any</label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="order-note">Note (optional)</label>
+            <textarea id="order-note" placeholder="Pickup or delivery, preferred date…"></textarea>
+          </div>
+          <div class="field">
+            <label for="order-preview">Your message</label>
+            <div class="preview" id="order-preview"></div>
+          </div>
+          <div class="btn-row" style="align-items:center">
+            <button class="btn" type="submit" id="copy-btn">Copy my order</button>
+            <span class="status" id="copy-status" role="status"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wordmark">Ya Marco!</div>
+  <p style="margin:0 auto">Homemade chili garlic · Fried golden, cooked low and slow, sealed by hand · © 2026</p>
+</footer>
+
+<script>
+/* ---------- order builder ---------- */
+(() => {
+  const qtyOut = document.getElementById('order-qty-out');
+  const nameIn = document.getElementById('order-name');
+  const noteIn = document.getElementById('order-note');
+  const preview = document.getElementById('order-preview');
+  const status = document.getElementById('copy-status');
+  let qty = 2;
+  const lid = () => document.querySelector('input[name="lid"]:checked').value;
+  const message = () => {
+    const l = lid();
+    const lidText = l === 'any' ? 'any lid colour' : `${l} lid`;
+    let m = `Hi Ya Marco! I'd like to reserve ${qty} jar${qty > 1 ? 's' : ''} of chili garlic (${lidText}).`;
+    if (nameIn.value.trim()) m += `\nName: ${nameIn.value.trim()}`;
+    if (noteIn.value.trim()) m += `\nNote: ${noteIn.value.trim()}`;
+    return m;
+  };
+  const render = () => { qtyOut.textContent = qty; preview.textContent = message(); status.textContent = ''; };
+  document.getElementById('qty-minus').addEventListener('click', () => { qty = Math.max(1, qty - 1); render(); });
+  document.getElementById('qty-plus').addEventListener('click', () => { qty = Math.min(48, qty + 1); render(); });
+  document.getElementById('order-form').addEventListener('input', render);
+  document.getElementById('order-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = message();
+    const fallback = () => {
+      const range = document.createRange(); range.selectNodeContents(preview);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      status.textContent = 'Selected. Press Ctrl+C (or long-press) to copy, then paste it into your message to us.';
+    };
+    try {
+      navigator.clipboard.writeText(text).then(
+        () => { status.textContent = 'Copied! Paste it into your message to us.'; },
+        fallback
+      );
+    } catch (err) { fallback(); }
+  });
+  render();
+
+  // videos: no autoplay for reduced motion
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); v.controls = true; });
+  }
+})();
+
+/* ---------- heat meter + burst follow scroll ---------- */
+(() => {
+  const heat = document.getElementById('heat');
+  const fill = document.querySelector('.meter');
+  const peppers = [...document.querySelectorAll('.peppers svg')];
+  const burst = document.querySelector('.burst');
+  const update = () => {
+    const r = heat.getBoundingClientRect();
+    const vh = innerHeight;
+    const p = Math.min(1, Math.max(0, (vh - r.top) / (r.height * 0.8)));
+    const level = 0.12 + p * 0.7;  // tops out at "hot"
+    fill.style.setProperty('--heat', level.toFixed(3));
+    peppers.forEach((s, i) => s.classList.toggle('on', level >= (i + 0.6) / 5));
+    burst.style.setProperty('--spin', `${12 + scrollY * 0.15}deg`);
+  };
+  addEventListener('scroll', update, {passive: true});
+  addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canvas = document.getElementById('scene');
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({canvas, antialias: true, powerPreference: 'high-performance'});
+} catch (e) {
+  document.documentElement.classList.add('no-webgl');
+  document.body.classList.add('no-webgl');
+}
+
+if (renderer) {
+  const isSmall = () => innerWidth < 760;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, isSmall() ? 1.5 : 1.75));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+  camera.position.set(0, 0, 9);
+
+  /* ----- fire background (full-screen shader) ----- */
+  const fireMat = new THREE.ShaderMaterial({
+    uniforms: {uTime: {value: 0}, uHeat: {value: 0.4}, uRes: {value: new THREE.Vector2(1, 1)}},
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    fragmentShader: `
+      precision highp float;
+      uniform float uTime, uHeat; uniform vec2 uRes; varying vec2 vUv;
+      float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);
+        return mix(mix(hash(i), hash(i+vec2(1,0)), u.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), u.x), u.y); }
+      float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++){ v += a*noise(p); p = p*2.03 + 1.7; a *= 0.5; } return v; }
+      void main(){
+        vec2 uv = vUv; float asp = uRes.x / uRes.y;
+        vec2 p = vec2(uv.x * asp * 1.15, uv.y);
+        float t = uTime;
+        float n  = fbm(vec2(p.x*2.4, p.y*1.7 - t*0.85));
+        float n2 = fbm(vec2(p.x*5.2 + 7.3, p.y*3.4 - t*1.6));
+        float reach = mix(0.36, 0.95, uHeat);
+        float f = 1.0 - uv.y / reach + (n - 0.5)*1.15 + (n2 - 0.5)*0.55;
+        f = clamp(f, 0.0, 1.0);
+        vec3 col = vec3(0.075, 0.015, 0.01);
+        col = mix(col, vec3(0.42, 0.03, 0.015), smoothstep(0.04, 0.32, f));
+        col = mix(col, vec3(0.98, 0.30, 0.04), smoothstep(0.32, 0.68, f));
+        col = mix(col, vec3(1.0, 0.80, 0.32), smoothstep(0.70, 1.0, f));
+        col += vec3(0.22, 0.035, 0.0) * pow(1.0 - uv.y, 2.0) * uHeat;
+        vec2 q = uv - 0.5; col *= 1.0 - dot(q, q) * 0.9;
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+    depthWrite: false, depthTest: false, toneMapped: false,
+  });
+  const fireQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), fireMat);
+  fireQuad.frustumCulled = false; fireQuad.renderOrder = -10;
+  scene.add(fireQuad);
+
+  /* ----- lights ----- */
+  scene.add(new THREE.HemisphereLight(0xffe0c0, 0x3a0800, 1.1));
+  const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(3, 5, 7); scene.add(key);
+  const fireLight = new THREE.PointLight(0xff5a1a, 60, 18, 1.6); fireLight.position.set(0, -3.2, 3); scene.add(fireLight);
+  const rim = new THREE.PointLight(0xff2a00, 45, 16, 1.6); rim.position.set(-3.5, 2.5, -2.5); scene.add(rim);
+
+  /* ----- canvas textures ----- */
+  const fontsReady = Promise.race([
+    Promise.all([document.fonts.load('120px Bangers'), document.fonts.load('800 40px "Bricolage Grotesque"')]),
+    new Promise(r => setTimeout(r, 2500)),
+  ]);
+
+  function flakesTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const g = c.getContext('2d');
+    const grd = g.createLinearGradient(0, 0, 0, 512); grd.addColorStop(0, '#d2470f'); grd.addColorStop(1, '#8e1a0a');
+    g.fillStyle = grd; g.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 1400; i++) {
+      const x = Math.random() * 512, y = Math.random() * 512, r = Math.random();
+      g.save(); g.translate(x, y); g.rotate(Math.random() * Math.PI);
+      if (r < 0.35) { g.fillStyle = '#ffc53d'; g.beginPath(); g.ellipse(0, 0, 3 + Math.random() * 3, 2 + Math.random() * 2, 0, 0, 7); g.fill(); }
+      else if (r < 0.75) { g.fillStyle = Math.random() < .5 ? '#e5291a' : '#ff5a1f'; g.fillRect(-5, -2, 6 + Math.random() * 8, 3 + Math.random() * 3); }
+      else if (r < 0.9) { g.fillStyle = '#f3d29a'; g.fillRect(-3, -3, 5, 5); }
+      else { g.fillStyle = 'rgba(70,10,5,.8)'; g.fillRect(-2, -2, 4, 4); }
+      g.restore();
+    }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 1.5); return t;
+  }
+
+  function labelTexture() {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 460;
+    const g = c.getContext('2d');
+    g.fillStyle = '#FFF1D6'; g.fillRect(0, 0, 1024, 460);
+    g.lineWidth = 18; g.strokeStyle = '#E8261C'; g.strokeRect(9, 9, 1006, 442);
+    g.lineWidth = 6; g.strokeStyle = '#2B0A05'; g.strokeRect(26, 26, 972, 408);
+    g.textAlign = 'center';
+    g.font = '190px Bangers, Impact, sans-serif';
+    g.lineJoin = 'round'; g.lineWidth = 22; g.strokeStyle = '#2B0A05';
+    g.save(); g.translate(512, 250); g.rotate(-0.05);
+    g.strokeText('YA MARCO!', 0, 0);
+    const wg = g.createLinearGradient(0, -150, 0, 10); wg.addColorStop(0, '#FFD54A'); wg.addColorStop(.5, '#FF8A00'); wg.addColorStop(1, '#E8261C');
+    g.fillStyle = wg; g.fillText('YA MARCO!', 0, 0); g.restore();
+    g.fillStyle = '#E8261C'; g.fillRect(170, 300, 684, 80);
+    g.fillStyle = '#FFF1D6'; g.font = '800 46px "Bricolage Grotesque", Arial, sans-serif';
+    g.fillText('CHILI GARLIC', 512, 357);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+  }
+
+  function lidTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const g = c.getContext('2d');
+    g.fillStyle = '#d8141c'; g.fillRect(0, 0, 512, 512);
+    g.fillStyle = '#120403'; g.beginPath(); g.arc(256, 256, 190, 0, 7); g.fill();
+    g.strokeStyle = '#fff'; g.lineWidth = 6; g.beginPath(); g.arc(256, 256, 170, 0, 7); g.stroke();
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '110px Bangers, Impact, sans-serif';
+    g.save(); g.translate(256, 290); g.rotate(-0.12); g.fillText('SALAMAT!', 0, 0); g.restore();
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+
+  /* ----- the jar ----- */
+  const jar = new THREE.Group();
+  scene.add(jar);
+  const profile = (s, top) => [[0, -1.1], [0.82, -1.1], [0.97, -1.03], [1.0, -0.86], [1.0, 0.6], [0.93, 0.8], [0.84, 0.9], [0.84, top]]
+    .map(([r, y]) => new THREE.Vector2(r * s, y));
+
+  const glassMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    vertexShader: `varying vec3 vN; varying vec3 vV;
+      void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `varying vec3 vN; varying vec3 vV;
+      void main(){ float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.4);
+        gl_FragColor = vec4(vec3(1.0, 0.93, 0.86) * f * 0.95 + vec3(0.025), 1.0); }`,
+  });
+  const glass = new THREE.Mesh(new THREE.LatheGeometry(profile(1, 1.12), 72), glassMat);
+  glass.renderOrder = 2;
+
+  const contentsMat = new THREE.MeshStandardMaterial({roughness: 0.32, metalness: 0, emissive: 0xff4400, emissiveIntensity: 0.28});
+  const contentsPts = [[0, -1.04], [0.8, -1.04], [0.93, -0.98], [0.955, -0.86], [0.955, 0.55], [0.6, 0.6], [0, 0.6]].map(([r, y]) => new THREE.Vector2(r, y));
+  const contents = new THREE.Mesh(new THREE.LatheGeometry(contentsPts, 72), contentsMat);
+
+  const labelMat = new THREE.MeshStandardMaterial({roughness: 0.55, metalness: 0});
+  const label = new THREE.Mesh(new THREE.CylinderGeometry(1.015, 1.015, 0.98, 64, 1, true, -0.9, 1.8), labelMat);
+  label.position.y = -0.18;
+
+  const lidMat = new THREE.MeshStandardMaterial({color: 0xd8141c, metalness: 0.4, roughness: 0.28});
+  const lid = new THREE.Mesh(new THREE.CylinderGeometry(0.91, 0.91, 0.34, 72), lidMat);
+  lid.position.y = 1.27;
+  const lidRing = new THREE.Mesh(new THREE.TorusGeometry(0.91, 0.035, 12, 72), lidMat);
+  lidRing.rotation.x = Math.PI / 2; lidRing.position.y = 1.11;
+  const lidTopMat = new THREE.MeshStandardMaterial({roughness: 0.4, metalness: 0.2});
+  const lidTop = new THREE.Mesh(new THREE.CircleGeometry(0.905, 72), lidTopMat);
+  lidTop.rotation.x = -Math.PI / 2; lidTop.position.y = 1.442;
+  const seal = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.15, 0.02), new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.3}));
+  seal.position.set(0.66, 0.72, 0.76); seal.rotation.y = 0.72;
+  jar.add(contents, label, lid, lidRing, lidTop, seal, glass);
+
+  fontsReady.then(() => {
+    contentsMat.map = flakesTexture(); contentsMat.emissiveMap = contentsMat.map; contentsMat.needsUpdate = true;
+    labelMat.map = labelTexture(); labelMat.needsUpdate = true;
+    lidTopMat.map = lidTexture(); lidTopMat.needsUpdate = true;
+  });
+
+  /* ----- cartoon chilies and garlic with googly eyes ----- */
+  const eyeWhite = new THREE.MeshStandardMaterial({color: 0xffffff, roughness: 0.25, emissive: 0x332211, emissiveIntensity: 0.4});
+  const pupilMat = new THREE.MeshStandardMaterial({color: 0x120303, roughness: 0.2});
+  const eyeGeo = new THREE.SphereGeometry(1, 20, 16);
+
+  function addEye(parent, x, y, z, r, look = [0, 0]) {
+    const w = new THREE.Mesh(eyeGeo, eyeWhite); w.scale.setScalar(r); w.position.set(x, y, z);
+    const p = new THREE.Mesh(eyeGeo, pupilMat); p.scale.setScalar(r * 0.5); p.position.set(x + look[0] * r * 0.3, y + look[1] * r * 0.3, z + r * 0.72);
+    parent.add(w, p);
+  }
+
+  const chiliCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0.62, 0), new THREE.Vector3(0.1, 0.25, 0), new THREE.Vector3(0.08, -0.15, 0),
+    new THREE.Vector3(-0.08, -0.5, 0), new THREE.Vector3(-0.36, -0.78, 0), new THREE.Vector3(-0.62, -0.8, 0),
+  ]);
+  const chiliTaper = u => u < 0.1 ? Math.sqrt(Math.max(0.03, u / 0.1)) * 0.92 + 0.08 : Math.pow(1 - (u - 0.1) / 0.9, 0.72) * 0.97 + 0.03;
+  const chiliGeo = (() => {
+    const tub = 90, rad = 22, R = 0.25;
+    const geo = new THREE.TubeGeometry(chiliCurve, tub, R, rad, false);
+    const pos = geo.attributes.position, v = new THREE.Vector3(), c = new THREE.Vector3();
+    for (let i = 0; i <= tub; i++) {
+      const u = i / tub; chiliCurve.getPointAt(u, c); const f = chiliTaper(u);
+      for (let j = 0; j <= rad; j++) {
+        const k = i * (rad + 1) + j; v.fromBufferAttribute(pos, k); v.sub(c).multiplyScalar(f).add(c); pos.setXYZ(k, v.x, v.y, v.z);
+      }
+    }
+    geo.computeVertexNormals(); return geo;
+  })();
+  const chiliMat = new THREE.MeshPhysicalMaterial({color: 0xe3191b, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.12, emissive: 0x400000, emissiveIntensity: 0.5});
+  const greenMat = new THREE.MeshStandardMaterial({color: 0x3e9a2f, roughness: 0.5});
+  const browMat = new THREE.MeshStandardMaterial({color: 0x1a0503});
+
+  function makeChili() {
+    const g = new THREE.Group();
+    g.add(new THREE.Mesh(chiliGeo, chiliMat));
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.2, 20, 12), greenMat); cap.scale.set(1.15, 0.55, 1.15); cap.position.set(0, 0.64, 0);
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.045, 0.3, 10), greenMat); stem.position.set(0.05, 0.8, 0); stem.rotation.z = -0.45;
+    g.add(cap, stem);
+    const c = chiliCurve.getPointAt(0.18);
+    addEye(g, c.x - 0.09, c.y + 0.04, 0.18, 0.085, [-0.4, -0.2]);
+    addEye(g, c.x + 0.1, c.y + 0.04, 0.18, 0.085, [-0.4, -0.2]);
+    const b1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.035, 0.03), browMat); b1.position.set(c.x - 0.09, c.y + 0.16, 0.24); b1.rotation.z = -0.45;
+    const b2 = b1.clone(); b2.position.x = c.x + 0.1; b2.rotation.z = 0.45;
+    const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 10), browMat); mouth.scale.set(1.2, 0.8, 0.5);
+    const m = chiliCurve.getPointAt(0.3); mouth.position.set(m.x + 0.01, m.y + 0.02, 0.19);
+    g.add(b1, b2, mouth);
+    return g;
+  }
+
+  const garlicGeo = (() => {
+    const pts = [[0.0, -0.42], [0.22, -0.45], [0.4, -0.37], [0.5, -0.2], [0.51, 0.0], [0.44, 0.2], [0.3, 0.36], [0.15, 0.49], [0.06, 0.6], [0.025, 0.72]]
+      .map(([r, y]) => new THREE.Vector2(r, y));
+    const geo = new THREE.LatheGeometry(new THREE.SplineCurve(pts).getPoints(40), 64);
+    const pos = geo.attributes.position, v = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i);
+      const th = Math.atan2(v.z, v.x);
+      const k = 1 + 0.075 * Math.abs(Math.sin(3 * th));
+      pos.setXYZ(i, v.x * k, v.y, v.z * k);
+    }
+    geo.computeVertexNormals(); return geo;
+  })();
+  const garlicMat = new THREE.MeshStandardMaterial({color: 0xf7e8c8, roughness: 0.55, emissive: 0x3a1806, emissiveIntensity: 0.35});
+  const blushMat = new THREE.MeshStandardMaterial({color: 0xff8a8a, roughness: 0.6, transparent: true, opacity: 0.8});
+
+  function makeGarlic() {
+    const g = new THREE.Group();
+    g.add(new THREE.Mesh(garlicGeo, garlicMat));
+    addEye(g, -0.15, 0.08, 0.42, 0.11, [0.2, -0.1]);
+    addEye(g, 0.15, 0.08, 0.42, 0.11, [0.2, -0.1]);
+    const smile = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.025, 8, 20, Math.PI), browMat);
+    smile.rotation.z = Math.PI; smile.position.set(0, -0.08, 0.49);
+    const bl = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 8), blushMat); bl.scale.set(1.3, 0.7, 0.4); bl.position.set(-0.28, -0.06, 0.42);
+    const br = bl.clone(); br.position.x = 0.28;
+    g.add(smile, bl, br);
+    return g;
+  }
+
+  const floaters = [];
+  const swarm = new THREE.Group(); scene.add(swarm);
+  for (let i = 0; i < 12; i++) {
+    const isChili = i % 2 === 0;
+    const obj = isChili ? makeChili() : makeGarlic();
+    const s = (isChili ? 0.55 : 0.5) + Math.random() * 0.25;
+    obj.scale.setScalar(s);
+    swarm.add(obj);
+    floaters.push({obj, a0: (i / 12) * Math.PI * 2 + Math.random() * 0.3, rf: 0.8 + Math.random() * 0.45,
+      yOff: (Math.random() - 0.5) * 2.6, speed: 0.12 + Math.random() * 0.12, ph: Math.random() * 10, base: s});
+  }
+
+  /* ----- embers ----- */
+  const N = isSmall() ? 260 : 700;
+  const ePos = new Float32Array(N * 3), eSeed = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    ePos[i * 3] = (Math.random() - 0.5) * 18; ePos[i * 3 + 1] = (Math.random() - 0.5) * 12; ePos[i * 3 + 2] = -4 + Math.random() * 6;
+    eSeed[i * 3] = 0.4 + Math.random() * 1.1; eSeed[i * 3 + 1] = 0.5 + Math.random() * 2; eSeed[i * 3 + 2] = 1.5 + Math.random() * 4;
+  }
+  const eGeo = new THREE.BufferGeometry();
+  eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
+  eGeo.setAttribute('aSeed', new THREE.BufferAttribute(eSeed, 3));
+  const eMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: {uTime: {value: 0}, uHeat: {value: 0.4}, uPR: {value: renderer.getPixelRatio()}},
+    vertexShader: `uniform float uTime, uHeat, uPR; attribute vec3 aSeed; varying float vLife;
+      void main(){ vec3 p = position; float sp = aSeed.x * (0.5 + uHeat * 1.6);
+        float y = mod(p.y + 6.0 + uTime * sp, 12.0) - 6.0; vLife = (y + 6.0) / 12.0; p.y = y;
+        p.x += sin(uTime * aSeed.y + aSeed.y * 10.0) * 0.35;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_PointSize = aSeed.z * (0.8 + uHeat) * uPR * (6.0 / -mv.z);
+        gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `varying float vLife;
+      void main(){ float d = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.0, d);
+        vec3 col = mix(vec3(1.0, 0.85, 0.4), vec3(1.0, 0.22, 0.04), vLife);
+        gl_FragColor = vec4(col * a * (1.0 - vLife * 0.75), a); }`,
+  });
+  scene.add(new THREE.Points(eGeo, eMat));
+
+  /* ----- scroll choreography ----- */
+  const presets = {
+    hero:    {x: 2.45, y: -0.1, s: 1.0,  tilt: 0.12,  R: 2.2, heat: 0.38, spin: 0},
+    crew:    {x: -2.7, y: 0.0,  s: 0.85, tilt: -0.1,  R: 2.4, heat: 0.45, spin: 1},
+    made:    {x: 3.0,  y: 0.1,  s: 0.75, tilt: 0.2,   R: 2.0, heat: 0.52, spin: 2},
+    heat:    {x: 0.0,  y: -0.05, s: 1.1, tilt: 0.0,   R: 3.5, heat: 1.0,  spin: 4},
+    gallery: {x: -2.9, y: 0.0,  s: 0.8,  tilt: -0.15, R: 2.2, heat: 0.6,  spin: 5},
+    order:   {x: 2.8,  y: -0.1, s: 1.0,  tilt: 0.1,   R: 2.1, heat: 0.5,  spin: 6},
+  };
+  const mobilePreset = (p, name) => ({...p, x: 0, y: name === 'hero' ? -1.35 : 0.3, s: p.s * 0.72, R: p.R * 0.62});
+  const sections = [...document.querySelectorAll('[data-scene]')];
+  let anchors = [];
+  const computeAnchors = () => {
+    anchors = sections.map(s => {
+      const top = s.getBoundingClientRect().top + scrollY;
+      return {y: top + s.offsetHeight / 2 - innerHeight / 2, name: s.dataset.scene};
+    });
+  };
+  const ease = t => t * t * (3 - 2 * t);
+  const keys = Object.keys(presets.hero);
+  const presetFor = name => isSmall() ? mobilePreset(presets[name], name) : presets[name];
+  function targetState() {
+    const y = scrollY;
+    if (y <= anchors[0].y) return presetFor(anchors[0].name);
+    for (let i = 0; i < anchors.length - 1; i++) {
+      const a = anchors[i], b = anchors[i + 1];
+      if (y <= b.y) {
+        const t = ease((y - a.y) / Math.max(1, b.y - a.y));
+        const pa = presetFor(a.name), pb = presetFor(b.name), out = {};
+        for (const k of keys) out[k] = pa[k] + (pb[k] - pa[k]) * t;
+        return out;
+      }
+    }
+    return presetFor(anchors[anchors.length - 1].name);
+  }
+
+  const resize = () => {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    fireMat.uniforms.uRes.value.set(w, h);
+    computeAnchors();
+  };
+  addEventListener('resize', resize);
+  resize();
+  addEventListener('load', computeAnchors);
+
+  const mouse = {x: 0, y: 0};
+  addEventListener('pointermove', e => { mouse.x = e.clientX / innerWidth - 0.5; mouse.y = e.clientY / innerHeight - 0.5; }, {passive: true});
+
+  const cur = {...targetState()};
+  const clock = new THREE.Clock();
+  let t = 0;
+  function tick() {
+    const dt = Math.min(clock.getDelta(), 0.05);
+    t += dt * (reduce ? 0.2 : 1);
+    const tgt = targetState();
+    const k = 1 - Math.pow(0.002, dt);
+    for (const key of keys) cur[key] += (tgt[key] - cur[key]) * k;
+
+    fireMat.uniforms.uTime.value = t; fireMat.uniforms.uHeat.value = cur.heat;
+    eMat.uniforms.uTime.value = t; eMat.uniforms.uHeat.value = cur.heat;
+    fireLight.intensity = 45 + cur.heat * 70 + Math.sin(t * 13) * 6 + Math.sin(t * 7.3) * 8;
+
+    jar.position.set(cur.x, cur.y + Math.sin(t * 1.1) * 0.08, 0);
+    jar.scale.setScalar(cur.s);
+    jar.rotation.set(cur.tilt + Math.sin(t * 0.7) * 0.04, Math.sin(t * 0.45) * 0.5 + cur.spin * Math.PI * 2, Math.sin(t * 0.6) * 0.05);
+
+    for (const f of floaters) {
+      const ang = f.a0 + t * f.speed * (1 + cur.heat * 1.8);
+      const R = cur.R * f.rf * cur.s;
+      f.obj.position.set(
+        cur.x + Math.cos(ang) * R,
+        cur.y + f.yOff * cur.s + Math.sin(t * 0.9 + f.ph) * 0.22,
+        Math.sin(ang) * R * 0.7 - 0.3
+      );
+      f.obj.scale.setScalar(f.base * (0.75 + cur.s * 0.35));
+      f.obj.lookAt(camera.position);
+      f.obj.rotateZ(Math.sin(t * 1.3 + f.ph) * 0.35);
+      f.obj.rotateY(Math.sin(t * 0.8 + f.ph) * 0.45);
+    }
+
+    const shake = Math.max(0, cur.heat - 0.85) * 0.12 * (reduce ? 0 : 1);
+    camera.position.x += (mouse.x * 0.6 - camera.position.x) * 0.05;
+    camera.position.y += (-mouse.y * 0.4 - camera.position.y) * 0.05;
+    camera.lookAt(0, 0, 0);
+    camera.position.x += (Math.random() - 0.5) * shake;
+    camera.position.y += (Math.random() - 0.5) * shake;
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+</script>
+
+</body>
+</html>
