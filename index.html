@@ -146,6 +146,36 @@ p { margin: 0; max-width: 60ch; }
 @keyframes drip { 0%{transform:scaleY(.2);transform-origin:top} 50%{transform:scaleY(1)} 100%{transform:scaleY(.2);transform-origin:bottom} }
 .hero { position: relative; }
 
+/* commercial */
+.ad .inner { justify-content: center; }
+.ad .col { width: min(100%, 1040px); align-items: center; text-align: center; }
+.player {
+  position: relative; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #000;
+  border: 5px solid var(--ember); border-radius: 8px; transform: rotate(-1deg);
+  box-shadow: 10px 10px 0 var(--ember), 0 0 70px rgba(255, 90, 0, .45);
+}
+.player button { all: unset; display: block; width: 100%; height: 100%; cursor: pointer; position: relative; }
+.player button:focus-visible { outline: 4px solid var(--yolk); outline-offset: -8px; }
+.player img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+.player button:hover img { transform: scale(1.03); }
+.play-btn {
+  position: absolute; right: 6%; top: 50%; width: clamp(84px, 15vw, 170px); aspect-ratio: 1;
+  transform: translateY(-50%) rotate(-8deg); transition: transform .2s ease;
+  filter: drop-shadow(5px 5px 0 var(--ember));
+}
+.play-btn svg { width: 100%; height: 100%; display: block; }
+.player button:hover .play-btn { transform: translateY(-50%) rotate(10deg) scale(1.1); }
+.play-label {
+  position: absolute; left: 14px; bottom: 12px; font-family: var(--display); font-size: clamp(1rem, .8rem + .8vw, 1.5rem); letter-spacing: .04em;
+  background: var(--chili); color: var(--garlic); padding: .15rem .8rem; border: 3px solid var(--ember); box-shadow: 3px 3px 0 var(--ember);
+}
+.player iframe { display: block; width: 100%; height: 100%; border: 0; }
+.ad .muted a { color: var(--yolk); font-weight: 800; }
+@media (prefers-reduced-motion: no-preference) {
+  .play-btn svg { animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { transform: scale(1.08); } }
+}
+
 /* crew */
 .crew-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem; }
 .crew-card { display: flex; flex-direction: column; gap: .6rem; align-items: flex-start; }
@@ -299,6 +329,7 @@ img { max-width: 100%; }
 <nav class="nav" aria-label="Main">
   <a class="wordmark" href="#hero">Ya Marco!</a>
   <ul>
+    <li class="opt"><a class="link" href="#ad">Watch the ad</a></li>
     <li class="opt"><a class="link" href="#crew">The crew</a></li>
     <li class="opt"><a class="link" href="#made">How it's made</a></li>
     <li class="opt"><a class="link" href="#heat">Heat level</a></li>
@@ -329,11 +360,30 @@ img { max-width: 100%; }
         <p class="lead">Fresh garlic fried golden, real chilies cooked low and slow, every jar sealed by hand. Spicy, garlicky, and a little bit loud.</p>
         <div class="btn-row">
           <a class="btn" href="#order">Get a jar</a>
-          <a class="btn red" href="#made">See the fire</a>
+          <a class="btn red" href="#ad">Watch the ad</a>
         </div>
       </div>
     </div>
     <div class="scroll-hint" aria-hidden="true">Scroll if you can take the heat<i></i></div>
+  </section>
+
+  <section id="ad" class="band ad" data-scene="ad">
+    <div class="inner">
+      <div class="col">
+        <span class="kicker" style="align-self:center">Now showing</span>
+        <h2 class="hot">The commercial.</h2>
+        <div class="player">
+          <button type="button" id="ad-play" aria-label="Play the Ya Marco commercial, 30 seconds, with sound">
+            <img src="assets/ad-poster.jpg" alt="" width="1280" height="720" loading="lazy">
+            <span class="play-btn" aria-hidden="true">
+              <svg viewBox="0 0 100 100"><polygon points="50,2 59,22 80,10 76,33 98,36 81,52 96,70 73,70 74,94 56,80 44,98 38,76 16,88 22,66 2,58 22,46 8,28 30,30 28,6 44,22" fill="#FFC93C" stroke="#2B0A05" stroke-width="4" stroke-linejoin="round"/><path d="M41 33 L69 50 L41 67 Z" fill="#2B0A05"/></svg>
+            </span>
+            <span class="play-label">Play · 0:30 · Sound on</span>
+          </button>
+        </div>
+        <p class="muted" style="margin:0 auto">Can't play it here? <a href="https://youtu.be/lYMJOtj93_E" target="_blank" rel="noopener">Watch it on YouTube</a>.</p>
+      </div>
+    </div>
   </section>
 
   <section id="crew" class="band side-right" data-scene="crew">
@@ -517,6 +567,19 @@ img { max-width: 100%; }
     } catch (err) { fallback(); }
   });
   render();
+
+  // commercial: load the YouTube player only when someone presses play
+  const play = document.getElementById('ad-play');
+  play.addEventListener('click', () => {
+    const f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/lYMJOtj93_E?autoplay=1&rel=0&playsinline=1';
+    f.title = 'Ya Marco! commercial';
+    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    f.allowFullscreen = true;
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    play.replaceWith(f);
+    f.focus();
+  });
 
   // videos: no autoplay for reduced motion
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -829,6 +892,7 @@ if (renderer) {
   /* ----- scroll choreography ----- */
   const presets = {
     hero:    {x: 2.45, y: -0.1, s: 1.0,  tilt: 0.12,  R: 2.2, heat: 0.38, spin: 0},
+    ad:      {x: -4.3, y: -1.7, s: 0.6,  tilt: 0.1,   R: 1.7, heat: 0.48, spin: 0},
     crew:    {x: -2.7, y: 0.0,  s: 0.85, tilt: -0.1,  R: 2.4, heat: 0.45, spin: 1},
     made:    {x: 3.0,  y: 0.1,  s: 0.75, tilt: 0.2,   R: 2.0, heat: 0.52, spin: 2},
     heat:    {x: 0.0,  y: -0.05, s: 1.1, tilt: 0.0,   R: 3.5, heat: 1.0,  spin: 4},
